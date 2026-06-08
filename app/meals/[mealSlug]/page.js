@@ -4,14 +4,30 @@ import Image from 'next/image';
 import { getMeal } from '@/app/lib/meals';
 import { notFound } from 'next/navigation';
 
-export default function page({ params }) {
-    const meal = getMeal(params.mealSlug);
+
+export async function generateMetadata({ params }) {
+    const meal = await getMeal(params.mealSlug);
 
     if (!meal) {
         notFound();
     }
 
-    meal.instructions = meal.instructions.replace(/\n/g, '<br />');
+    return {
+        title: meal.title,
+        desciprtion: meal.summary
+    };
+}
+
+export default async function page({ params }) {
+    const meal = await getMeal(params.mealSlug);
+
+    if (!meal) {
+        notFound();
+    }
+    console.log(meal);
+
+
+    meal.instructions = meal.instructions?.replace(/\n/g, '<br />') || '';
 
     return (
         <>
